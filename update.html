@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Update Form</title>
+    <meta charset="UTF-8">
+    <link type="text/css" rel="stylesheet" href="asset/style.css">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <script src="asset/jquery.min.js"></script>
+    <script src="asset/script.js"></script>
+</head>
+
+<body>
+
+    <div class="header">
+        <h2>
+            Event Management
+        </h2>
+    </div>
+    <div class="menu">
+        <button class="btn-3"><a href="index.html">Home</a></button>
+        <button class="btn-3"><a href="index.html">Register</a></button>
+        <button class="btn-3"><a href="index.html">Show Registerations</a></button>
+    </div>
+
+    <div class="signup1">
+        <h1>Update Form</h1>
+
+        <div class="form">
+            <form method="POST" name="form_2" class="updForm">
+                <p><input type="text" id="name" placeholder="Full Name"></p>
+                <p><input type="text" id="email" placeholder="Email Id"></p>
+                <p>
+                    <select name="gender" id="gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </p>
+                <p><textarea placeholder="About" id="about"></textarea></p>
+                <p>
+                    <input name="terms" type="checkbox" id="terms" value="accept">
+                    <label for="terms">I accept terms and condition.</label>
+                </p>
+                <button class="btn-3" type="submit">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let url = new URL(window.location.href);
+        let search_params = url.searchParams;
+        var id = search_params.get('id');
+
+        var new_url = base_url + "?req=getone&id=" + id;
+
+        var id = -1;
+
+        $.get(new_url, function(data, success) {
+            document.getElementById("name").value = data.fname;
+            document.getElementById("email").value = data.email;
+            document.getElementById("gender").value = data.gender;
+            document.getElementById("about").value = data.about;
+            id = data.id;
+        });
+
+        if (id === "-1") {
+            window.location.href = "index.html";
+        }
+
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        $(document).on('submit', '.updForm', function(e) {
+            e.preventDefault();
+
+            var name = document.getElementById('name');
+            var email = document.getElementById('email');
+            var gender = document.getElementById('gender');
+            var about = document.getElementById('about');
+            var terms = document.getElementById('terms');
+
+            if (mailformat.test(email.value) == false || name.value.length <= 3 || about.value.length <= 2 || terms.checked == false) {
+                alert("Form was not properly Filled");
+            } else {
+                var obj = JSON.stringify({ fname: name.value, email: email.value, gender: gender.value, about: about.value, id: id });
+                var url = base_url + "?req=update&object=" + obj;
+                $.get(url, function(data, success) {
+                    if (data != "Update Successfully!!!") {
+                        alert("Try Again...Form not submitted Successfully!!!");
+                    } else {
+                        alert("Form Updated Successfully!!!");
+                        window.location.href = 'index.html';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
